@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="theme-color" content="#c2185b"/>
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <title>My Girl's OT Tracker</title>
+    <style>
+        /* CSS code တွေက အရင်အတိုင်းပဲ... ဘာမှမပြောင်းပါ */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fce4ec;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff80ab;
+            opacity: 0;
+            animation: floatUp 10s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #c2185b;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #ad1457;
+        }
+
+        input[type="date"], select, button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #f8bbd0;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #c2185b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        button#calculate-btn {
+            background-color: #4db6ac;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        #records-container h2 {
+            color: #c2185b;
+            border-bottom: 2px solid #fce4ec;
+            padding-bottom: 10px;
+        }
+        
+        #record-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .record-item {
+            background-color: #fef9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 5px solid #c2185b;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            position: relative;
+        }
+        
+        .record-item span {
+            font-weight: 500;
+        }
+
+        .edit-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #c2185b;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            padding: 10px 20px;
+        }
+        
+        #edit-btn { background-color: #42a5f5; }
+        #delete-btn { background-color: #ef5350; }
+        #cancel-btn { background-color: #bdbdbd; }
+
+        .calculation-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e0f2f1;
+            border-radius: 10px;
+            border-left: 5px solid #00796b;
+        }
+        
+        .calculation-section h2 {
+            margin-top: 0;
+            color: #004d40;
+        }
+
+        #summary-text {
+            font-size: 1.1rem;
+            color: #004d40;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Babe's OT Tracker 💕</h1>
+
+        <div class="input-section">
+            <label for="ot-date">နေ့စွဲ ရွေးပါ:</label>
+            <input type="date" id="ot-date">
+            <label for="ot-hours">OT အခြေအနေ:</label>
+            <select id="ot-hours">
+                <option value="0">OT မဆင်းပါ</option>
+                <option value="2">၂ နာရီ</option>
+                <option value="4">၄ နာရီ</option>
+            </select>
+            <button id="save-btn">မှတ်တမ်းတင်မယ် (Save)</button>
+        </div>
+
+        <div id="records-container">
+            <h2>မှတ်တမ်းများ</h2>
+            <div id="record-list"></div>
+        </div>
+
+        <div class="calculation-section">
+            <h2>လချုပ် OT စာရင်း</h2>
+            <button id="calculate-btn">ဒီလအတွက် OT စာရင်းချုပ်မယ်</button>
+            <p id="summary-text"></p>
+        </div>
+    </div>
+    
+    <div id="action-dialog" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <h3>ဘာလုပ်ချင်လဲ ဘရို?</h3>
+        <div class="modal-buttons">
+            <button id="edit-btn">ပြင်ဆင်မယ် (Edit)</button>
+            <button id="delete-btn">ဖျက်မယ် (Delete)</button>
+            <button id="cancel-btn">မလုပ်တော့ဘူး (Cancel)</button>
+        </div>
+      </div>
+    </div>
+
+
+    <script>
+        // Javascript code တွေက အရင်အတိုင်းပဲ... ဘာမှမပြောင်းပါ
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            const heartEmojis = ['💕', '💖', '💗', '💓', '💞'];
+            heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, 7000);
+        }
+        setInterval(createHeart, 300);
+        
+        const dateInput = document.getElementById('ot-date');
+        const hoursSelect = document.getElementById('ot-hours');
+        const saveButton = document.getElementById('save-btn');
+        const recordList = document.getElementById('record-list');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const summaryText = document.getElementById('summary-text');
+
+        const actionDialog = document.getElementById('action-dialog');
+        const editBtn = document.getElementById('edit-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        let otRecords = JSON.parse(localStorage.getItem('otRecords')) || [];
+        let currentlyEditingId = null;
+
+        function displayRecords() {
+            recordList.innerHTML = '';
+            const sortedRecords = [...otRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (sortedRecords.length === 0) {
+                recordList.innerHTML = '<p>လောလောဆယ် မှတ်တမ်းမရှိသေးပါ</p>';
+                return;
+            }
+
+            sortedRecords.forEach(record => {
+                const recordItem = document.createElement('div');
+                recordItem.className = 'record-item';
+                let hourText = (record.hours == 0) ? 'OT မဆင်းပါ' : `${record.hours} နာရီ OT ဆင်းသည်`;
+                
+                recordItem.innerHTML = `
+                    <span>📅 ${record.date}</span>
+                    <span>🕒 ${hourText}</span>
+                    <span class="edit-icon" data-id="${record.id}">✏️</span> 
+                `;
+                
+                recordList.appendChild(recordItem);
+            });
+            
+            document.querySelectorAll('.edit-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const recordId = e.target.getAttribute('data-id');
+                    showActionDialog(recordId);
+                });
+            });
+        }
+        
+        function showActionDialog(recordId) {
+            actionDialog.style.display = 'flex';
+            
+            editBtn.onclick = () => {
+                startEditing(recordId);
+                actionDialog.style.display = 'none';
+            };
+
+            deleteBtn.onclick = () => {
+                if (confirm('ဘရို... ဒီမှတ်တမ်းကို ဖျက်မှာ သေချာလား?')) {
+                    deleteRecord(recordId);
+                }
+                actionDialog.style.display = 'none';
+            };
+
+            cancelBtn.onclick = () => {
+                actionDialog.style.display = 'none';
+            };
+        }
+
+        function deleteRecord(recordId) {
+            otRecords = otRecords.filter(record => record.id != recordId);
+            localStorage.setItem('otRecords', JSON.stringify(otRecords));
+            displayRecords();
+        }
+
+        function startEditing(recordId) {
+            const recordToEdit = otRecords.find(record => record.id == recordId);
+            if (recordToEdit) {
+                dateInput.value = recordToEdit.date;
+                hoursSelect.value = recordToEdit.hours;
+                currentlyEditingId = recordId;
+                saveButton.textContent = 'ပြင်ဆင်တာကို သိမ်းမယ် (Update)';
+                window.scrollTo(0, 0);
+            }
+        }
+
+        saveButton.addEventListener('click', () => {
+            const date = dateInput.value;
+            if (!date) {
+                alert('ဘရို... နေ့စွဲလေး အရင်ရွေးပေးပါဦး!');
+                return;
+            }
+            const hours = hoursSelect.value;
+
+            if (currentlyEditingId) {
+                const recordIndex = otRecords.findIndex(record => record.id == currentlyEditingId);
+                if (recordIndex > -1) {
+                    otRecords[recordIndex].date = date;
+                    otRecords[recordIndex].hours = parseInt(hours);
+                }
+                saveButton.textContent = 'မှတ်တမ်းတင်မယ် (Save)';
+                currentlyEditingId = null;
+            } else {
+                const newRecord = { 
+                    id: Date.now(),
+                    date: date, 
+                    hours: parseInt(hours) 
+                };
+                otRecords.push(newRecord);
+            }
+            
+            localStorage.setItem('otRecords', JSON.stringify(otRecords));
+            displayRecords();
+            dateInput.value = '';
+            hoursSelect.value = '0';
+        });
+        
+        calculateBtn.addEventListener('click', () => {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            const thisMonthRecords = otRecords.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
+            });
+            const totalHours = thisMonthRecords.reduce((sum, record) => sum + record.hours, 0);
+            const totalPay = totalHours * 2000;
+            if (totalHours > 0) {
+                summaryText.innerHTML = `ဒီလအတွက် စုစုပေါင်း OT: <strong>${totalHours} နာရီ</strong><br>ရရှိမည့် OT ခ: <strong>${totalPay.toLocaleString()} ကျပ်</strong>`;
+            } else {
+                summaryText.innerHTML = `ဒီလမှာ OT ဆင်းထားတဲ့ မှတ်တမ်းမရှိသေးပါဘူး။`;
+            }
+        });
+
+        displayRecords();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(registration => {
+                    console.log('Service Worker Register အောင်မြင်တယ်!');
+                }).catch(err => {
+                    console.log('Service Worker Register မအောင်မြင်ဘူး: ', err);
+                });
+            });
+        }
+    </script>
+    </body>
+</html>

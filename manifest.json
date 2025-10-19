@@ -1,0 +1,21 @@
+{
+  "name": "Babe's OT Tracker",
+  "short_name": "OT Tracker",
+  "description": "A simple and lovely app to track OT hours.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#fce4ec",
+  "theme_color": "#c2185b",
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "images/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
