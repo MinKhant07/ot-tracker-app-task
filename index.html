@@ -212,7 +212,7 @@
                 <option value="2">၂ နာရီ</option>
                 <option value="4">၄ နာရီ</option>
             </select>
-            <button id="save-btn">မှတ်တမ်းတင်မယ် (Save)</button>
+            <button id="save-btn">မှတ်တမ်းတင်မယ်</button>
         </div>
 
         <div id="records-container">
@@ -231,9 +231,9 @@
       <div class="modal-content">
         <h3>ဘာလုပ်ချင်လဲ ဘရို?</h3>
         <div class="modal-buttons">
-            <button id="edit-btn">ပြင်ဆင်မယ် (Edit)</button>
-            <button id="delete-btn">ဖျက်မယ် (Delete)</button>
-            <button id="cancel-btn">မလုပ်တော့ဘူး (Cancel)</button>
+            <button id="edit-btn">ပြင်</button>
+            <button id="delete-btn">ဖျက်</button>
+            <button id="cancel-btn">Cancel</button>
         </div>
       </div>
     </div>
@@ -310,7 +310,7 @@
             };
 
             deleteBtn.onclick = () => {
-                if (confirm('ဘရို... ဒီမှတ်တမ်းကို ဖျက်မှာ သေချာလား?')) {
+                if (confirm('သဲတုန်း... ဒီမှတ်တမ်းကို ဖျက်မှာ သေချာလို့လားဟင်?')) {
                     deleteRecord(recordId);
                 }
                 actionDialog.style.display = 'none';
@@ -341,7 +341,7 @@
         saveButton.addEventListener('click', () => {
             const date = dateInput.value;
             if (!date) {
-                alert('ဘရို... နေ့စွဲလေး အရင်ရွေးပေးပါဦး!');
+                alert('သဲတုန်း... နေ့စွဲလေး အရင်ရွေးပေးပါဦး!');
                 return;
             }
             const hours = hoursSelect.value;
